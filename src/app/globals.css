@@ -60,7 +60,10 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
@@ -107,13 +110,25 @@ body {
   color: var(--muted);
 }
 
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.hero-slide {
+  animation: fadeSlide 700ms ease;
+}
+
 .sprocket-rule {
-  background-image: repeating-linear-gradient(
-    to right,
-    var(--line-strong) 0,
-    var(--line-strong) 1px,
-    transparent 1px,
-    transparent 10px
-  );
+  background-image: repeating-linear-gradient(to right,
+      var(--line-strong) 0,
+      var(--line-strong) 1px,
+      transparent 1px,
+      transparent 10px);
   height: 1px;
 }

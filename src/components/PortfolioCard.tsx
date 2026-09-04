@@ -2,9 +2,13 @@ import type { PortfolioItem } from "@/lib/portfolio-data";
 
 const CATEGORY_ACCENT: Record<PortfolioItem["category"], string> = {
   weddings: "text-orange",
+  events: "text-teal",
   conferences: "text-teal",
   school: "text-orange",
   college: "text-teal",
+  havan: "text-orange",
+  choki: "text-teal",
+  jagran: "text-orange",
 };
 
 export default function PortfolioCard({ item }: { item: PortfolioItem }) {

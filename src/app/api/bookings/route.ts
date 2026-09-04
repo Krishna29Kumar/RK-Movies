@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { connectToDatabase } from "@/lib/mongodb";
+import { auth } from "@/lib/auth";
 import Booking from "@/models/Booking";
 import {
   EVENT_TYPES,
@@ -33,6 +34,15 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     await connectToDatabase();
+
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: "Please sign in to submit a booking." },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
     const {
       name,
@@ -156,6 +166,7 @@ export async function POST(request: NextRequest) {
     }
 
     const booking = await Booking.create({
+      userId: session.user.id,
       name,
       email,
       phone,

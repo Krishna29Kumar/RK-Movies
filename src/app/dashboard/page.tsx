@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { auth } from "@/lib/auth";
-import TimecodeLabel from "@/components/TimecodeLabel";
+import SectionLabel from "@/components/SectionLabel";
 
 export default async function DashboardHome() {
   const session = await auth();
@@ -20,7 +20,7 @@ export default async function DashboardHome() {
       </p>
 
       <div className="mt-8">
-        <TimecodeLabel index={1}>Quick links</TimecodeLabel>
+        <SectionLabel>Quick links</SectionLabel>
         <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
           <Link
             href="/dashboard/work"

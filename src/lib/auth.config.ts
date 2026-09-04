@@ -10,13 +10,16 @@ export const authConfig = {
     async jwt({ token, user }) {
       if (user) {
         token.mobile = (user as { mobile?: string }).mobile;
+        // token.sub is already set to the id returned by authorize().
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        (session.user as typeof session.user & { mobile?: string }).mobile =
+        (session.user as typeof session.user & { mobile?: string; id?: string }).mobile =
           token.mobile as string | undefined;
+        (session.user as typeof session.user & { mobile?: string; id?: string }).id =
+          token.sub ?? "";
       }
       return session;
     },

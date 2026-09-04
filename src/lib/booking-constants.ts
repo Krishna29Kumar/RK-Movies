@@ -7,7 +7,7 @@ export const EVENT_TYPES = [
 
 export type EventType = (typeof EVENT_TYPES)[number];
 
-export const BOOKING_STATUSES = ["pending", "confirmed", "declined"] as const;
+export const BOOKING_STATUSES = ["pending", "confirmed", "declined", "cancelled"] as const;
 export type BookingStatus = (typeof BOOKING_STATUSES)[number];
 
 export const CAMERA_TYPES = [
@@ -39,3 +39,17 @@ export const ADVANCE_AMOUNTS: Record<EventType, number> = {
 
 export const PAYMENT_STATUSES = ["pending", "paid"] as const;
 export type PaymentStatus = (typeof PAYMENT_STATUSES)[number];
+
+// A cancellation made this many days (or fewer) before the event date is
+// NOT eligible for a refund of the advance. Cancelling earlier than this
+// just flags the booking for the studio to review the refund request.
+export const REFUND_ELIGIBLE_DAYS_BEFORE = 4;
+
+export const REFUND_STATUSES = [
+  "not_applicable",
+  "not_eligible",
+  "requested",
+  "approved",
+  "denied",
+] as const;
+export type RefundStatus = (typeof REFUND_STATUSES)[number];

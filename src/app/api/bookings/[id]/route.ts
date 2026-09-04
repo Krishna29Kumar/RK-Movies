@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import Booking from "@/models/Booking";
-import { BOOKING_STATUSES } from "@/lib/booking-constants";
+import { BOOKING_STATUSES, REFUND_STATUSES } from "@/lib/booking-constants";
 
 export async function PATCH(
   request: NextRequest,
@@ -11,21 +11,29 @@ export async function PATCH(
     await connectToDatabase();
     const { id } = await params;
     const body = await request.json();
-    const { status, passcode } = body;
+    const { status, refundStatus, passcode } = body;
 
     if (passcode !== process.env.ADMIN_PASSCODE) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    if (!BOOKING_STATUSES.includes(status)) {
-      return NextResponse.json({ error: "Invalid status." }, { status: 400 });
+    const update: { status?: string; refundStatus?: string } = {};
+
+    if (status !== undefined) {
+      if (!BOOKING_STATUSES.includes(status)) {
+        return NextResponse.json({ error: "Invalid status." }, { status: 400 });
+      }
+      update.status = status;
     }
 
-    const booking = await Booking.findByIdAndUpdate(
-      id,
-      { status },
-      { new: true }
-    );
+    if (refundStatus !== undefined) {
+      if (!REFUND_STATUSES.includes(refundStatus)) {
+        return NextResponse.json({ error: "Invalid refund status." }, { status: 400 });
+      }
+      update.refundStatus = refundStatus;
+    }
+
+    const booking = await Booking.findByIdAndUpdate(id, update, { new: true });
 
     if (!booking) {
       return NextResponse.json({ error: "Not found." }, { status: 404 });

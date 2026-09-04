@@ -5,18 +5,35 @@ import {
   CAMERA_TYPES,
   SHOOT_TYPES,
   PAYMENT_STATUSES,
+  REFUND_STATUSES,
   type EventType,
   type BookingStatus,
   type CameraType,
   type ShootType,
   type PaymentStatus,
+  type RefundStatus,
 } from "@/lib/booking-constants";
 
-export { EVENT_TYPES, BOOKING_STATUSES, CAMERA_TYPES, SHOOT_TYPES, PAYMENT_STATUSES };
-export type { EventType, BookingStatus, CameraType, ShootType, PaymentStatus };
+export {
+  EVENT_TYPES,
+  BOOKING_STATUSES,
+  CAMERA_TYPES,
+  SHOOT_TYPES,
+  PAYMENT_STATUSES,
+  REFUND_STATUSES,
+};
+export type {
+  EventType,
+  BookingStatus,
+  CameraType,
+  ShootType,
+  PaymentStatus,
+  RefundStatus,
+};
 
 export interface IBooking {
   _id: mongoose.Types.ObjectId;
+  userId: mongoose.Types.ObjectId;
   name: string;
   email: string;
   phone: string;
@@ -35,10 +52,14 @@ export interface IBooking {
   paymentStatus: PaymentStatus;
   razorpayOrderId: string;
   razorpayPaymentId: string;
+  cancelledAt?: Date;
+  cancellationMessage?: string;
+  refundStatus: RefundStatus;
   createdAt: Date;
 }
 
 const BookingSchema = new Schema<IBooking>({
+  userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
   name: { type: String, required: true, trim: true },
   email: { type: String, required: true, trim: true, lowercase: true },
   phone: { type: String, required: true, trim: true },
@@ -65,9 +86,17 @@ const BookingSchema = new Schema<IBooking>({
   },
   razorpayOrderId: { type: String, required: true },
   razorpayPaymentId: { type: String, required: true },
+  cancelledAt: { type: Date },
+  cancellationMessage: { type: String, trim: true },
+  refundStatus: {
+    type: String,
+    enum: REFUND_STATUSES,
+    default: "not_applicable",
+  },
   createdAt: { type: Date, default: () => new Date() },
 });
 
 BookingSchema.index({ eventDate: 1 });
+BookingSchema.index({ userId: 1 });
 
 export default models.Booking || model<IBooking>("Booking", BookingSchema);

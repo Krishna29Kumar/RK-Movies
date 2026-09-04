@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { CATEGORIES, PORTFOLIO_ITEMS, CategorySlug } from "@/lib/portfolio-data";
 import PortfolioCard from "@/components/PortfolioCard";
-import TimecodeLabel from "@/components/TimecodeLabel";
+import SectionLabel from "@/components/SectionLabel";
 
 export default function DashboardWorkPage() {
   const [active, setActive] = useState<CategorySlug | "all">("all");
@@ -25,11 +25,10 @@ export default function DashboardWorkPage() {
       <div className="mt-6 flex flex-wrap gap-2">
         <button
           onClick={() => setActive("all")}
-          className={`rounded-sm border px-3 py-1.5 font-mono text-xs uppercase tracking-[0.1em] transition-colors ${
-            active === "all"
-              ? "border-orange bg-orange-soft text-orange"
-              : "border-line text-muted hover:text-cream"
-          }`}
+          className={`rounded-sm border px-3 py-1.5 font-mono text-xs uppercase tracking-[0.1em] transition-colors ${active === "all"
+            ? "border-orange bg-orange-soft text-orange"
+            : "border-line text-muted hover:text-cream"
+            }`}
         >
           All work
         </button>
@@ -37,11 +36,10 @@ export default function DashboardWorkPage() {
           <button
             key={cat.slug}
             onClick={() => setActive(cat.slug)}
-            className={`rounded-sm border px-3 py-1.5 font-mono text-xs uppercase tracking-[0.1em] transition-colors ${
-              active === cat.slug
-                ? "border-orange bg-orange-soft text-orange"
-                : "border-line text-muted hover:text-cream"
-            }`}
+            className={`rounded-sm border px-3 py-1.5 font-mono text-xs uppercase tracking-[0.1em] transition-colors ${active === cat.slug
+              ? "border-orange bg-orange-soft text-orange"
+              : "border-line text-muted hover:text-cream"
+              }`}
           >
             {cat.label}
           </button>
@@ -49,9 +47,9 @@ export default function DashboardWorkPage() {
       </div>
 
       <div className="mt-8">
-        <TimecodeLabel index={items.length}>
+        <SectionLabel>
           {items.length} {items.length === 1 ? "project" : "projects"}
-        </TimecodeLabel>
+        </SectionLabel>
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
