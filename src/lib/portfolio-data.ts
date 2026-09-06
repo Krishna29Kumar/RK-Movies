@@ -50,23 +50,26 @@ export type PortfolioItem = {
   client: string;
   duration: string;
   year: string;
+  // A short line shown on hover — replace with real shoot notes once you
+  // have actual footage/photos to describe.
+  note: string;
 };
 
 export const PORTFOLIO_ITEMS: PortfolioItem[] = [
-  { id: "p1", title: "Amara & Dev — Udaipur", category: "weddings", client: "Private client", duration: "3-day coverage", year: "2026" },
-  { id: "p2", title: "Riverside Vows", category: "weddings", client: "Private client", duration: "2-day coverage", year: "2025" },
-  { id: "p3", title: "Meera's 25th Birthday", category: "events", client: "Private client", duration: "Half-day", year: "2026" },
-  { id: "p4", title: "Silver Jubilee Anniversary", category: "events", client: "Private client", duration: "Full-day", year: "2025" },
-  { id: "p5", title: "NexCon Product Summit", category: "conferences", client: "NexCon Technologies", duration: "1-day, 3-camera", year: "2026" },
-  { id: "p6", title: "FinEdge Leadership Offsite", category: "conferences", client: "FinEdge Capital", duration: "2-day recap", year: "2025" },
-  { id: "p7", title: "Founders' Day Assembly", category: "school", client: "Greenwood Public School", duration: "Half-day", year: "2026" },
-  { id: "p8", title: "Annual Sports Meet", category: "school", client: "St. Xavier's High", duration: "Full-day, multi-cam", year: "2025" },
-  { id: "p9", title: "Spring Cultural Fest", category: "college", client: "KR Mangalam University", duration: "3-day coverage", year: "2026" },
-  { id: "p10", title: "Convocation 2025", category: "college", client: "State College of Engineering", duration: "1-day ceremony", year: "2025" },
-  { id: "p11", title: "Griha Pravesh Havan", category: "havan", client: "Private client", duration: "Half-day", year: "2026" },
-  { id: "p12", title: "Navratri Havan", category: "havan", client: "Private client", duration: "Half-day", year: "2025" },
-  { id: "p13", title: "Ramayan Choki — Sharma Family", category: "choki", client: "Private client", duration: "Full-day", year: "2026" },
-  { id: "p14", title: "Choki & Bhajan Sandhya", category: "choki", client: "Private client", duration: "Full-day", year: "2025" },
-  { id: "p15", title: "Mata Ki Jagran", category: "jagran", client: "Private client", duration: "Overnight, multi-cam", year: "2026" },
-  { id: "p16", title: "Community Jagran", category: "jagran", client: "Private client", duration: "Overnight, multi-cam", year: "2025" },
+  { id: "p1", title: "Amara & Dev — Udaipur", category: "weddings", client: "Private client", duration: "3-day coverage", year: "2026", note: "Lakeside sangeet through to the morning vidaai, shot across three days." },
+  { id: "p2", title: "Riverside Vows", category: "weddings", client: "Private client", duration: "2-day coverage", year: "2025", note: "Golden-hour phera ceremony by the river, candid coverage throughout." },
+  { id: "p3", title: "Meera's 25th Birthday", category: "events", client: "Private client", duration: "Half-day", year: "2026", note: "Rooftop celebration, natural light with a single roving camera." },
+  { id: "p4", title: "Silver Jubilee Anniversary", category: "events", client: "Private client", duration: "Full-day", year: "2025", note: "Family-hall event, multi-cam coverage from entry to farewell." },
+  { id: "p5", title: "NexCon Product Summit", category: "conferences", client: "NexCon Technologies", duration: "1-day, 3-camera", year: "2026", note: "Keynote plus two breakout tracks, synced multi-cam recap edit." },
+  { id: "p6", title: "FinEdge Leadership Offsite", category: "conferences", client: "FinEdge Capital", duration: "2-day recap", year: "2025", note: "Panel discussions and closed-door sessions, discreet fixed rigs." },
+  { id: "p7", title: "Founders' Day Assembly", category: "school", client: "Greenwood Public School", duration: "Half-day", year: "2026", note: "Auditorium assembly, wide coverage of performances and speeches." },
+  { id: "p8", title: "Annual Sports Meet", category: "school", client: "St. Xavier's High", duration: "Full-day, multi-cam", year: "2025", note: "Full-ground coverage across track and field events, all day." },
+  { id: "p9", title: "Spring Cultural Fest", category: "college", client: "KR Mangalam University", duration: "3-day coverage", year: "2026", note: "Three days of stage performances and crowd energy, multi-cam." },
+  { id: "p10", title: "Convocation 2025", category: "college", client: "State College of Engineering", duration: "1-day ceremony", year: "2025", note: "Formal stage coverage plus candid graduate portraits outside." },
+  { id: "p11", title: "Griha Pravesh Havan", category: "havan", client: "Private client", duration: "Half-day", year: "2026", note: "Quiet, respectful coverage of the full havan ritual at home." },
+  { id: "p12", title: "Navratri Havan", category: "havan", client: "Private client", duration: "Half-day", year: "2025", note: "Community havan, wide and close shots of the full ceremony." },
+  { id: "p13", title: "Ramayan Choki — Sharma Family", category: "choki", client: "Private client", duration: "Full-day", year: "2026", note: "Full-day paath coverage from opening shlokas to closing aarti." },
+  { id: "p14", title: "Choki & Bhajan Sandhya", category: "choki", client: "Private client", duration: "Full-day", year: "2025", note: "Evening bhajan sandhya with a fixed wide and a roving close cam." },
+  { id: "p15", title: "Mata Ki Jagran", category: "jagran", client: "Private client", duration: "Overnight, multi-cam", year: "2026", note: "Overnight jagran, multi-cam through to the morning aarti." },
+  { id: "p16", title: "Community Jagran", category: "jagran", client: "Private client", duration: "Overnight, multi-cam", year: "2025", note: "Community pandal jagran, wide crowd shots and stage close-ups." },
 ];

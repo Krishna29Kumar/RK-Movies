@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { connectToDatabase } from "@/lib/mongodb";
 import { auth } from "@/lib/auth";
+import { getAdminFromRequest } from "@/lib/admin-auth";
 import Booking from "@/models/Booking";
 import {
   EVENT_TYPES,
@@ -14,9 +15,9 @@ import {
 export async function GET(request: NextRequest) {
   try {
     await connectToDatabase();
-    const passcode = request.nextUrl.searchParams.get("passcode");
+    const admin = await getAdminFromRequest(request);
 
-    if (passcode !== process.env.ADMIN_PASSCODE) {
+    if (!admin) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

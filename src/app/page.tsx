@@ -2,6 +2,9 @@ import Link from "next/link";
 import HeroSlider from "@/components/HeroSlider";
 import CategoryExplorer from "@/components/CategoryExplorer";
 import SectionLabel from "@/components/SectionLabel";
+import HighlightsMarquee from "@/components/HighlightsMarquee";
+import StatsStrip from "@/components/StatsStrip";
+import Testimonials from "@/components/Testimonials";
 
 const PROCESS = [
   { title: "Enquire", copy: "Tell us the event, date, and city. We reply within a day." },
@@ -13,28 +16,46 @@ const PROCESS = [
 export default function Home() {
   return (
     <div>
-      {/* HERO — auto-sliding across every kind of shoot */}
-      <section className="mx-auto max-w-6xl px-6 pt-14 sm:pt-20">
-        <div className="flex flex-wrap items-end justify-between gap-4 pb-6">
-          <div>
-            <p className="font-mono text-xs uppercase tracking-[0.14em] text-orange">
-              Now booking 2026 &mdash; 2027 dates
-            </p>
-            <h1 className="mt-3 font-display text-5xl leading-[0.95] tracking-wide text-cream sm:text-7xl">
-              EVERY EVENT
-              <br />
-              HAS A CUT.
-            </h1>
-          </div>
-          <p className="max-w-xs text-sm text-muted">
-            Wedding films, corporate recaps, campus events, and religious
-            ceremonies &mdash; shot and edited by one studio, one point of
-            contact.
-          </p>
-        </div>
+      {/* HERO — auto-sliding across every kind of shoot, with ambient glow */}
+      <section className="relative overflow-hidden">
+        <div
+          aria-hidden
+          className="ambient-orb -top-24 -left-24 h-72 w-72 bg-orange"
+        />
+        <div
+          aria-hidden
+          className="ambient-orb top-1/3 -right-24 h-72 w-72 bg-violet"
+        />
+        <div
+          aria-hidden
+          className="ambient-orb bottom-0 left-1/4 h-56 w-[420px] bg-teal"
+        />
 
-        <HeroSlider />
+        <div className="relative mx-auto max-w-6xl px-6 pt-14 sm:pt-20">
+          <div className="flex flex-wrap items-end justify-between gap-4 pb-6">
+            <div>
+              <p className="font-mono text-xs uppercase tracking-[0.14em] text-orange">
+                Now booking 2026 &mdash; 2027 dates
+              </p>
+              <h1 className="mt-3 font-display text-5xl leading-[0.95] tracking-wide text-cream sm:text-7xl">
+                EVERY EVENT
+                <br />
+                HAS A CUT.
+              </h1>
+            </div>
+            <p className="max-w-xs text-sm text-muted">
+              Wedding films, corporate recaps, campus events, and religious
+              ceremonies &mdash; shot and edited by one studio, one point of
+              contact.
+            </p>
+          </div>
+
+          <HeroSlider />
+        </div>
       </section>
+
+      {/* HIGHLIGHTS TICKER — full-bleed scrolling strip */}
+      <HighlightsMarquee />
 
       {/* EXPERIENCE HEADLINE */}
       <section className="mx-auto max-w-6xl px-6 pt-20 text-center">
@@ -50,6 +71,16 @@ export default function Home() {
       {/* CATEGORY EXPLORER — click a category to preview, then sign in/up */}
       <section className="mx-auto max-w-6xl px-6 pt-12">
         <CategoryExplorer />
+      </section>
+
+      {/* STATS STRIP */}
+      <section className="mx-auto max-w-6xl px-6 pt-20">
+        <StatsStrip />
+      </section>
+
+      {/* TESTIMONIALS */}
+      <section className="mx-auto max-w-6xl px-6 pt-20">
+        <Testimonials />
       </section>
 
       {/* PROCESS */}

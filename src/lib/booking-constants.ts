@@ -3,6 +3,9 @@ export const EVENT_TYPES = [
   "Conference / Corporate Event",
   "School Event",
   "College Event",
+  "Jagran",
+  "Choki",
+  "Havan",
 ] as const;
 
 export type EventType = (typeof EVENT_TYPES)[number];
@@ -35,19 +38,22 @@ export const ADVANCE_AMOUNTS: Record<EventType, number> = {
   "Conference / Corporate Event": 1000,
   "School Event": 1000,
   "College Event": 1000,
+  Jagran: 1000,
+  Choki: 1000,
+  Havan: 1000,
 };
 
 export const PAYMENT_STATUSES = ["pending", "paid"] as const;
 export type PaymentStatus = (typeof PAYMENT_STATUSES)[number];
 
-// A cancellation made this many days (or fewer) before the event date is
-// NOT eligible for a refund of the advance. Cancelling earlier than this
-// just flags the booking for the studio to review the refund request.
-export const REFUND_ELIGIBLE_DAYS_BEFORE = 4;
+// A cancellation made at least this many days before the event date gets
+// an AUTOMATIC refund — no reason needed. A cancellation made closer to
+// the event than this is a "late" cancellation: the customer must give a
+// reason, and the studio reviews it before approving/denying the refund.
+export const AUTO_REFUND_DAYS_BEFORE = 7;
 
 export const REFUND_STATUSES = [
   "not_applicable",
-  "not_eligible",
   "requested",
   "approved",
   "denied",

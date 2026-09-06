@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
+import { getAdminFromRequest } from "@/lib/admin-auth";
 import Booking from "@/models/Booking";
 import { BOOKING_STATUSES, REFUND_STATUSES } from "@/lib/booking-constants";
 
@@ -8,14 +9,15 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const admin = await getAdminFromRequest(request);
+    if (!admin) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     await connectToDatabase();
     const { id } = await params;
     const body = await request.json();
-    const { status, refundStatus, passcode } = body;
-
-    if (passcode !== process.env.ADMIN_PASSCODE) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const { status, refundStatus } = body;
 
     const update: { status?: string; refundStatus?: string } = {};
 

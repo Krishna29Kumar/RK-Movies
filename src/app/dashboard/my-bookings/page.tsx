@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { format, differenceInCalendarDays } from "date-fns";
 import SectionLabel from "@/components/SectionLabel";
-import { REFUND_ELIGIBLE_DAYS_BEFORE } from "@/lib/booking-constants";
+import { AUTO_REFUND_DAYS_BEFORE } from "@/lib/booking-constants";
 
 type Booking = {
     _id: string;
@@ -20,12 +20,11 @@ type Booking = {
     advanceAmount: number;
     paymentStatus: "pending" | "paid";
     cancellationMessage?: string;
-    refundStatus: "not_applicable" | "not_eligible" | "requested" | "approved" | "denied";
+    refundStatus: "not_applicable" | "requested" | "approved" | "denied";
 };
 
 const REFUND_LABEL: Record<Booking["refundStatus"], string> = {
     not_applicable: "",
-    not_eligible: "Advance not refunded (cancelled too close to the date)",
     requested: "Refund requested — awaiting studio review",
     approved: "Refund approved",
     denied: "Refund request denied",
@@ -167,7 +166,7 @@ function BookingCard({
 }) {
     const canCancel = booking.status === "pending" || booking.status === "confirmed";
     const daysUntil = differenceInCalendarDays(new Date(booking.eventDate), new Date());
-    const eligibleForRefundRequest = daysUntil >= REFUND_ELIGIBLE_DAYS_BEFORE;
+    const isEarlyCancellation = daysUntil >= AUTO_REFUND_DAYS_BEFORE;
 
     return (
         <div className="rounded-sm border border-line-strong bg-bg-raised p-4 sm:p-5">
@@ -219,7 +218,7 @@ function BookingCard({
             {canCancel && isCanceling && (
                 <CancelPanel
                     bookingId={booking._id}
-                    eligibleForRefundRequest={eligibleForRefundRequest}
+                    isEarlyCancellation={isEarlyCancellation}
                     onClose={onCloseCancel}
                     onCancelled={onCancelled}
                 />
@@ -230,12 +229,12 @@ function BookingCard({
 
 function CancelPanel({
     bookingId,
-    eligibleForRefundRequest,
+    isEarlyCancellation,
     onClose,
     onCancelled,
 }: {
     bookingId: string;
-    eligibleForRefundRequest: boolean;
+    isEarlyCancellation: boolean;
     onClose: () => void;
     onCancelled: (b: Booking) => void;
 }) {
@@ -244,8 +243,8 @@ function CancelPanel({
     const [error, setError] = useState("");
 
     async function submit() {
-        if (eligibleForRefundRequest && !message.trim()) {
-            setError("Please add a short message so the studio can review your refund request.");
+        if (!isEarlyCancellation && !message.trim()) {
+            setError("Please add a reason so the studio can review your refund request.");
             return;
         }
         setSubmitting(true);
@@ -271,11 +270,16 @@ function CancelPanel({
 
     return (
         <div className="mt-3 space-y-3 border-t border-line pt-3">
-            {eligibleForRefundRequest ? (
+            {isEarlyCancellation ? (
+                <p className="text-xs text-teal">
+                    You&apos;re cancelling {AUTO_REFUND_DAYS_BEFORE}+ days before the event —
+                    your advance will be refunded automatically, no reason needed.
+                </p>
+            ) : (
                 <>
-                    <p className="text-xs text-muted">
-                        You&apos;re cancelling {REFUND_ELIGIBLE_DAYS_BEFORE}+ days before the event —
-                        add a short message and the studio will consider refunding your advance.
+                    <p className="text-xs text-orange">
+                        This is within {AUTO_REFUND_DAYS_BEFORE} days of your event date. Please
+                        add a reason — the studio will review it before approving a refund.
                     </p>
                     <textarea
                         rows={2}
@@ -285,11 +289,6 @@ function CancelPanel({
                         placeholder="Why are you cancelling?"
                     />
                 </>
-            ) : (
-                <p className="text-xs text-orange">
-                    This is within {REFUND_ELIGIBLE_DAYS_BEFORE} days of your event date, so the
-                    advance payment will not be refunded. Cancel anyway?
-                </p>
             )}
 
             {error && (
@@ -306,9 +305,9 @@ function CancelPanel({
                 >
                     {submitting
                         ? "Cancelling…"
-                        : eligibleForRefundRequest
-                            ? "Request cancellation & refund"
-                            : "Confirm cancellation"}
+                        : isEarlyCancellation
+                            ? "Confirm cancellation & refund"
+                            : "Submit cancellation & refund request"}
                 </button>
                 <button
                     onClick={onClose}

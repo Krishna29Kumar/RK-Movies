@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import { auth } from "@/lib/auth";
 import Booking from "@/models/Booking";
-import { REFUND_ELIGIBLE_DAYS_BEFORE } from "@/lib/booking-constants";
+import { AUTO_REFUND_DAYS_BEFORE } from "@/lib/booking-constants";
 
 export async function POST(
     request: NextRequest,
@@ -44,13 +44,15 @@ export async function POST(
             (eventDay.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
         );
 
-        const eligibleForRefundRequest = daysUntilEvent >= REFUND_ELIGIBLE_DAYS_BEFORE;
+        const isEarlyCancellation = daysUntilEvent >= AUTO_REFUND_DAYS_BEFORE;
 
-        if (eligibleForRefundRequest && !message) {
+        // Late cancellation (within a week of the event) needs a reason —
+        // it gets sent to the studio for manual review before any refund.
+        if (!isEarlyCancellation && !message) {
             return NextResponse.json(
                 {
                     error:
-                        "Please add a short message explaining why you're cancelling — the studio will review it for a refund.",
+                        "This is within a week of your event date. Please add a reason for cancelling — the studio will review it before deciding on a refund.",
                 },
                 { status: 400 }
             );
@@ -59,7 +61,9 @@ export async function POST(
         booking.status = "cancelled";
         booking.cancelledAt = new Date();
         booking.cancellationMessage = message;
-        booking.refundStatus = eligibleForRefundRequest ? "requested" : "not_eligible";
+        // Cancelled a week or more in advance -> refund approved automatically.
+        // Cancelled late -> flagged for the studio to review.
+        booking.refundStatus = isEarlyCancellation ? "approved" : "requested";
         await booking.save();
 
         return NextResponse.json({ booking });

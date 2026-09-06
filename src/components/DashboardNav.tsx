@@ -8,6 +8,7 @@ const LINKS = [
   { href: "/dashboard/work", label: "Work" },
   { href: "/dashboard/book", label: "Book a date" },
   { href: "/dashboard/check-date", label: "Check a date" },
+  { href: "/dashboard/my-bookings", label: "My bookings" },
 ];
 
 export default function DashboardNav({ userName }: { userName: string }) {

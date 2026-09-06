@@ -1,206 +1,168 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { format } from "date-fns";
+import { useRouter } from "next/navigation";
+import type { AdminBooking } from "@/lib/admin-types";
+import StatsCards from "@/components/admin/StatsCards";
+import BookingsTable from "@/components/admin/BookingsTable";
+import RefundsPanel from "@/components/admin/RefundsPanel";
 
-type Booking = {
-  _id: string;
-  name: string;
-  email: string;
-  phone: string;
-  eventType: string;
-  eventDate: string;
-  startTime: string;
-  endTime: string;
-  durationHours: number;
-  address: string;
-  cameraCount: number;
-  cameraType: string;
-  shootType: string;
-  message?: string;
-  status: "pending" | "confirmed" | "declined";
-  advanceAmount: number;
-  paymentStatus: "pending" | "paid";
-  razorpayPaymentId: string;
-};
-
-const STATUS_STYLE: Record<Booking["status"], string> = {
-  pending: "text-orange border-orange/40 bg-orange-soft",
-  confirmed: "text-teal border-teal/40 bg-teal-soft",
-  declined: "text-muted border-line",
-};
+type Tab = "overview" | "bookings" | "refunds";
 
 export default function AdminPage() {
-  const [passcode, setPasscode] = useState("");
-  const [authed, setAuthed] = useState(false);
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const [bookings, setBookings] = useState<AdminBooking[]>([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [tab, setTab] = useState<Tab>("overview");
 
-  async function loadBookings(code: string) {
-    setLoading(true);
-    setError("");
-    try {
-      const res = await fetch(`/api/bookings?passcode=${encodeURIComponent(code)}`);
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || "Could not load bookings.");
-        setAuthed(false);
-        return;
+  useEffect(() => {
+    async function loadBookings() {
+      setLoading(true);
+      setError("");
+      try {
+        const res = await fetch("/api/bookings");
+        if (res.status === 401) {
+          router.push("/admin/login");
+          return;
+        }
+        const data = await res.json();
+        if (!res.ok) {
+          setError(data.error || "Could not load bookings.");
+          return;
+        }
+        setBookings(data.bookings);
+      } catch {
+        setError("Could not reach the server.");
+      } finally {
+        setLoading(false);
       }
-      setBookings(data.bookings);
-      setAuthed(true);
-    } catch {
-      setError("Could not reach the server.");
-    } finally {
-      setLoading(false);
     }
-  }
 
-  async function updateStatus(id: string, status: Booking["status"]) {
+    loadBookings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Shared updater — both the bookings table (Confirm/Decline) and the
+  // refunds panel (Approve/Deny) call this same function.
+  async function updateBooking(
+    id: string,
+    updates: { status?: AdminBooking["status"]; refundStatus?: AdminBooking["refundStatus"] }
+  ) {
     const res = await fetch(`/api/bookings/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status, passcode }),
+      body: JSON.stringify(updates),
     });
     if (res.ok) {
       const data = await res.json();
       setBookings((prev) =>
-        prev.map((b) => (b._id === id ? { ...b, status: data.booking.status } : b))
+        prev.map((b) => (b._id === id ? { ...b, ...data.booking } : b))
       );
     }
   }
 
-  useEffect(() => {
-    // No auto-login: passcode must be entered each session.
-  }, []);
+  async function handleSignOut() {
+    await fetch("/api/admin/logout", { method: "POST" });
+    router.push("/admin/login");
+  }
 
-  if (!authed) {
+  if (loading) {
     return (
-      <div className="mx-auto flex max-w-sm flex-col gap-4 px-6 py-24">
-        <h1 className="font-display text-2xl tracking-wide text-cream">
-          ADMIN ACCESS
-        </h1>
-        <p className="text-sm text-muted">
-          Enter the studio passcode to view and manage bookings.
+      <div className="mx-auto max-w-6xl px-6 py-24">
+        <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted">
+          Loading…
         </p>
-        <input
-          type="password"
-          value={passcode}
-          onChange={(e) => setPasscode(e.target.value)}
-          className="input"
-          placeholder="Passcode"
-          onKeyDown={(e) => e.key === "Enter" && loadBookings(passcode)}
-        />
-        {error && (
-          <p className="font-mono text-xs text-orange">{error}</p>
-        )}
-        <button
-          onClick={() => loadBookings(passcode)}
-          disabled={loading}
-          className="rounded-sm bg-orange px-4 py-2 font-mono text-xs uppercase tracking-[0.14em] text-bg disabled:opacity-50"
-        >
-          {loading ? "Checking…" : "Enter"}
-        </button>
       </div>
     );
   }
+
+  if (error) {
+    return (
+      <div className="mx-auto max-w-6xl px-6 py-24">
+        <p className="font-mono text-xs text-orange">{error}</p>
+      </div>
+    );
+  }
+
+  const refundRequestCount = bookings.filter((b) => b.refundStatus === "requested").length;
+
+  const TABS: { id: Tab; label: string; badge?: number }[] = [
+    { id: "overview", label: "Overview" },
+    { id: "bookings", label: "Bookings" },
+    { id: "refunds", label: "Refunds & Cancellations", badge: refundRequestCount || undefined },
+  ];
 
   return (
     <div className="mx-auto max-w-6xl px-6 py-14">
       <div className="flex items-center justify-between">
         <h1 className="font-display text-3xl tracking-wide text-cream">
-          BOOKINGS
+          ADMIN PORTAL
         </h1>
-        <span className="font-mono text-xs text-muted">
-          {bookings.length} total
-        </span>
+        <div className="flex items-center gap-4">
+          <span className="font-mono text-xs text-muted">{bookings.length} bookings total</span>
+          <button
+            onClick={handleSignOut}
+            className="rounded-sm border border-line px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.1em] text-muted hover:text-cream"
+          >
+            Sign out
+          </button>
+        </div>
       </div>
 
-      <div className="mt-8 overflow-x-auto rounded-sm border border-line">
-        <table className="w-full min-w-[760px] border-collapse text-left text-sm">
-          <thead>
-            <tr className="border-b border-line font-mono text-[10px] uppercase tracking-[0.1em] text-muted">
-              <th className="px-4 py-3">Date</th>
-              <th className="px-4 py-3">Timing</th>
-              <th className="px-4 py-3">Client</th>
-              <th className="px-4 py-3">Event</th>
-              <th className="px-4 py-3">Address</th>
-              <th className="px-4 py-3">Cameras</th>
-              <th className="px-4 py-3">Advance</th>
-              <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {bookings.map((b) => (
-              <tr key={b._id} className="border-b border-line last:border-0">
-                <td className="px-4 py-3 font-mono text-xs text-cream">
-                  {format(new Date(b.eventDate), "d MMM yyyy")}
-                </td>
-                <td className="px-4 py-3 font-mono text-xs text-muted">
-                  {b.startTime}&ndash;{b.endTime}
-                  <br />
-                  <span className="text-[10px]">{b.durationHours}h</span>
-                </td>
-                <td className="px-4 py-3">
-                  <p className="text-cream">{b.name}</p>
-                  <p className="text-xs text-muted">{b.email} &middot; {b.phone}</p>
-                </td>
-                <td className="px-4 py-3 text-muted">{b.eventType}</td>
-                <td className="px-4 py-3 text-muted">{b.address}</td>
-                <td className="px-4 py-3 text-muted">
-                  {b.cameraCount}&times; {b.cameraType}
-                  <br />
-                  <span className="text-xs">{b.shootType}</span>
-                </td>
-                <td className="px-4 py-3">
-                  <p className="text-cream">₹{b.advanceAmount}</p>
-                  <span
-                    className={`font-mono text-[10px] uppercase ${b.paymentStatus === "paid" ? "text-teal" : "text-orange"
-                      }`}
-                  >
-                    {b.paymentStatus}
-                  </span>
-                </td>
-                <td className="px-4 py-3">
-                  <span
-                    className={`rounded-sm border px-2 py-1 font-mono text-[10px] uppercase ${STATUS_STYLE[b.status]}`}
-                  >
-                    {b.status}
-                  </span>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex gap-2">
-                    {b.status !== "confirmed" && (
-                      <button
-                        onClick={() => updateStatus(b._id, "confirmed")}
-                        className="font-mono text-[10px] uppercase text-teal hover:underline"
-                      >
-                        Confirm
-                      </button>
-                    )}
-                    {b.status !== "declined" && (
-                      <button
-                        onClick={() => updateStatus(b._id, "declined")}
-                        className="font-mono text-[10px] uppercase text-muted hover:underline"
-                      >
-                        Decline
-                      </button>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            ))}
-            {bookings.length === 0 && (
-              <tr>
-                <td colSpan={9} className="px-4 py-10 text-center text-muted">
-                  No bookings yet.
-                </td>
-              </tr>
+      {/* Tab bar */}
+      <div className="mt-6 flex gap-2 border-b border-line">
+        {TABS.map((t) => (
+          <button
+            key={t.id}
+            onClick={() => setTab(t.id)}
+            className={[
+              "relative -mb-px flex items-center gap-2 border-b-2 px-3 py-2 font-mono text-xs uppercase tracking-[0.1em] transition-colors",
+              tab === t.id
+                ? "border-orange text-orange"
+                : "border-transparent text-muted hover:text-cream",
+            ].join(" ")}
+          >
+            {t.label}
+            {!!t.badge && (
+              <span className="rounded-full bg-orange px-1.5 py-0.5 text-[10px] text-bg">
+                {t.badge}
+              </span>
             )}
-          </tbody>
-        </table>
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-6">
+        {tab === "overview" && (
+          <div className="space-y-8">
+            <StatsCards bookings={bookings} />
+            <div>
+              <h2 className="font-display text-lg tracking-wide text-cream">
+                Needs your attention
+              </h2>
+              <p className="mt-1 text-sm text-muted">
+                Pending confirmations and refund requests, in one place.
+              </p>
+              <div className="mt-4">
+                <BookingsTable
+                  bookings={bookings.filter(
+                    (b) => b.status === "pending" || b.refundStatus === "requested"
+                  )}
+                  onUpdate={updateBooking}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {tab === "bookings" && (
+          <BookingsTable bookings={bookings} onUpdate={updateBooking} />
+        )}
+
+        {tab === "refunds" && (
+          <RefundsPanel bookings={bookings} onUpdate={updateBooking} />
+        )}
       </div>
     </div>
   );
