@@ -24,7 +24,7 @@ export default function HeroSlider() {
         if (paused) return;
         const timer = setInterval(() => {
             setIndex((i) => (i + 1) % SLIDES.length);
-        }, 3800);
+        }, 3000);
         return () => clearInterval(timer);
     }, [paused]);
 
@@ -78,10 +78,20 @@ export default function HeroSlider() {
                         onClick={() => setIndex(i)}
                         aria-label={`Show ${s.label} slide`}
                         className={[
-                            "h-1.5 rounded-full transition-all",
-                            i === index ? "w-6 bg-orange" : "w-1.5 bg-line-strong",
+                            "relative h-1.5 overflow-hidden rounded-full bg-line-strong transition-all",
+                            i === index ? "w-8" : "w-1.5",
                         ].join(" ")}
-                    />
+                    >
+                        {i === index && (
+                            <span
+                                key={`${s.slug}-${index}`}
+                                className={[
+                                    "progress-fill absolute inset-y-0 left-0 rounded-full bg-orange",
+                                    paused ? "[animation-play-state:paused]" : "",
+                                ].join(" ")}
+                            />
+                        )}
+                    </button>
                 ))}
             </div>
         </div>

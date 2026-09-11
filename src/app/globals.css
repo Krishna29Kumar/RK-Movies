@@ -177,6 +177,20 @@ body {
   animation: fadeSlide 700ms ease;
 }
 
+@keyframes progressFill {
+  from {
+    width: 0%;
+  }
+
+  to {
+    width: 100%;
+  }
+}
+
+.progress-fill {
+  animation: progressFill 3000ms linear;
+}
+
 .sprocket-rule {
   background-image: repeating-linear-gradient(to right,
       var(--line-strong) 0,
