@@ -5,9 +5,13 @@ import Footer from "@/components/Footer";
 import AuthProvider from "@/components/AuthProvider";
 
 export const metadata: Metadata = {
-  title: "Lensreel Films — Wedding, Event & Campus Videography",
+  title: "RK-Movies — Wedding, Event & Campus Videography",
   description:
-    "Cinematic videography for weddings, conferences, school events, and college events. Sign in to view the full portfolio and book a date.",
+    "Cinematic videography for weddings, conferences, school events, and college events by RK-Movies. Sign in to view the full portfolio and book a date.",
+  icons: {
+    icon: "/logo.jpg",
+    apple: "/logo.jpg",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

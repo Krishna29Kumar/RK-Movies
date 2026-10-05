@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
 
 export default function AdminLoginPage() {
     const router = useRouter();
@@ -39,6 +41,20 @@ export default function AdminLoginPage() {
 
     return (
         <div className="mx-auto flex min-h-[70vh] max-w-sm flex-col justify-center px-6 py-16">
+            <Link href="/" className="mb-6 inline-flex items-center gap-2.5">
+                <div className="relative h-10 w-10 overflow-hidden rounded-md border border-line/60 bg-bg-raised">
+                    <Image
+                        src="/logo.jpg"
+                        alt="RK-MOVIES"
+                        width={40}
+                        height={40}
+                        className="h-full w-full object-cover"
+                    />
+                </div>
+                <span className="font-display text-2xl tracking-wider text-cream">
+                    RK-MOVIES
+                </span>
+            </Link>
             <p className="font-mono text-xs uppercase tracking-[0.14em] text-orange">
                 Studio access
             </p>

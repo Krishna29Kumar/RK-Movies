@@ -1,4 +1,4 @@
-# Lensreel — Videographer Portfolio & Booking Site
+# RK-Movies — Videographer Portfolio & Booking Site
 
 Next.js (App Router, TypeScript) + MongoDB. Portfolio covering weddings,
 conferences/corporate events, school events, and college events, plus a
