@@ -18,7 +18,9 @@ export type AdminBooking = {
     advanceAmount: number;
     paymentStatus: "pending" | "paid";
     razorpayPaymentId: string;
+    razorpayRefundId?: string;
     cancelledAt?: string;
     cancellationMessage?: string;
     refundStatus: "not_applicable" | "requested" | "approved" | "denied";
+    createdAt?: string;
 };

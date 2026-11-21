@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
-import { auth } from "@/lib/auth";
 import Booking from "@/models/Booking";
 import { AUTO_REFUND_DAYS_BEFORE } from "@/lib/booking-constants";
 
@@ -9,11 +8,6 @@ export async function POST(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const session = await auth();
-        if (!session?.user?.id) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
-
         await connectToDatabase();
         const { id } = await params;
         const body = await request.json().catch(() => ({}));
@@ -23,10 +17,6 @@ export async function POST(
 
         if (!booking) {
             return NextResponse.json({ error: "Booking not found." }, { status: 404 });
-        }
-
-        if (booking.userId.toString() !== session.user.id) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
         }
 
         if (booking.status === "cancelled" || booking.status === "declined") {

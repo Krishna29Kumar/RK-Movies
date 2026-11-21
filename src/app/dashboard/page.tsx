@@ -1,18 +1,14 @@
 import Link from "next/link";
-import { auth } from "@/lib/auth";
 import SectionLabel from "@/components/SectionLabel";
 
-export default async function DashboardHome() {
-  const session = await auth();
-  const firstName = session?.user?.name?.split(" ")[0] ?? "";
-
+export default function DashboardHome() {
   return (
     <div>
       <p className="font-mono text-xs uppercase tracking-[0.14em] text-orange">
         Dashboard
       </p>
       <h1 className="mt-2 font-display text-3xl tracking-wide text-cream sm:text-4xl">
-        WELCOME{firstName ? `, ${firstName.toUpperCase()}` : ""}
+        WELCOME
       </h1>
       <p className="mt-2 max-w-xl text-sm text-muted">
         Browse the full portfolio, check which dates are open, or send a

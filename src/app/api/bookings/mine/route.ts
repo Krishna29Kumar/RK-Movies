@@ -1,17 +1,11 @@
 import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
-import { auth } from "@/lib/auth";
 import Booking from "@/models/Booking";
 
 export async function GET() {
     try {
-        const session = await auth();
-        if (!session?.user?.id) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
-
         await connectToDatabase();
-        const bookings = await Booking.find({ userId: session.user.id })
+        const bookings = await Booking.find()
             .sort({ eventDate: -1 })
             .lean();
 
@@ -19,7 +13,7 @@ export async function GET() {
     } catch (error) {
         console.error(error);
         return NextResponse.json(
-            { error: "Could not load your bookings." },
+            { error: "Could not load bookings." },
             { status: 500 }
         );
     }

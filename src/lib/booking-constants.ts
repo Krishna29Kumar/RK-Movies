@@ -32,6 +32,9 @@ export type ShootType = (typeof SHOOT_TYPES)[number];
 // as fully booked (the studio can run a few small crews on the same day).
 export const MAX_BOOKINGS_PER_DATE = 3;
 
+// Total package price in rupees.
+export const TOTAL_BOOKING_AMOUNT = 5000;
+
 // Advance payment required to submit a booking request, in rupees.
 export const ADVANCE_AMOUNTS: Record<EventType, number> = {
   Wedding: 2000,

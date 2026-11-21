@@ -199,3 +199,69 @@ body {
       transparent 10px);
   height: 1px;
 }
+
+/* Custom Viewfinder Cursor: hide standard cursor on devices with fine pointer */
+@media (hover: hover) and (pointer: fine) {
+  *,
+  *::before,
+  *::after {
+    cursor: none !important;
+  }
+}
+
+.viewfinder-cursor {
+  --bracket-len: 10px;
+  --bracket-thick: 2.5px;
+  --bracket-radius: 4px;
+  --bracket-color: var(--orange, #e8752c);
+  filter: drop-shadow(0 0 3px rgba(232, 117, 44, 0.45));
+  transition: opacity 0.15s ease;
+}
+
+.viewfinder-cursor.is-hovered {
+  --bracket-len: 12px;
+  --bracket-radius: 7px;
+  filter: drop-shadow(0 0 5px rgba(232, 117, 44, 0.55));
+}
+
+.viewfinder-corner {
+  position: absolute;
+  width: var(--bracket-len);
+  height: var(--bracket-len);
+  pointer-events: none;
+  transition: width 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              height 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              border-radius 0.2s ease;
+}
+
+.viewfinder-corner.top-left {
+  top: 0;
+  left: 0;
+  border-top: var(--bracket-thick) solid var(--bracket-color);
+  border-left: var(--bracket-thick) solid var(--bracket-color);
+  border-top-left-radius: var(--bracket-radius);
+}
+
+.viewfinder-corner.top-right {
+  top: 0;
+  right: 0;
+  border-top: var(--bracket-thick) solid var(--bracket-color);
+  border-right: var(--bracket-thick) solid var(--bracket-color);
+  border-top-right-radius: var(--bracket-radius);
+}
+
+.viewfinder-corner.bottom-left {
+  bottom: 0;
+  left: 0;
+  border-bottom: var(--bracket-thick) solid var(--bracket-color);
+  border-left: var(--bracket-thick) solid var(--bracket-color);
+  border-bottom-left-radius: var(--bracket-radius);
+}
+
+.viewfinder-corner.bottom-right {
+  bottom: 0;
+  right: 0;
+  border-bottom: var(--bracket-thick) solid var(--bracket-color);
+  border-right: var(--bracket-thick) solid var(--bracket-color);
+  border-bottom-right-radius: var(--bracket-radius);
+}

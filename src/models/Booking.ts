@@ -33,7 +33,7 @@ export type {
 
 export interface IBooking {
   _id: mongoose.Types.ObjectId;
-  userId: mongoose.Types.ObjectId;
+  userId?: mongoose.Types.ObjectId;
   name: string;
   email: string;
   phone: string;
@@ -52,6 +52,7 @@ export interface IBooking {
   paymentStatus: PaymentStatus;
   razorpayOrderId: string;
   razorpayPaymentId: string;
+  razorpayRefundId?: string;
   cancelledAt?: Date;
   cancellationMessage?: string;
   refundStatus: RefundStatus;
@@ -59,7 +60,7 @@ export interface IBooking {
 }
 
 const BookingSchema = new Schema<IBooking>({
-  userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  userId: { type: Schema.Types.ObjectId, ref: "User", required: false },
   name: { type: String, required: true, trim: true },
   email: { type: String, required: true, trim: true, lowercase: true },
   phone: { type: String, required: true, trim: true },
@@ -86,6 +87,7 @@ const BookingSchema = new Schema<IBooking>({
   },
   razorpayOrderId: { type: String, required: true },
   razorpayPaymentId: { type: String, required: true },
+  razorpayRefundId: { type: String },
   cancelledAt: { type: Date },
   cancellationMessage: { type: String, trim: true },
   refundStatus: {

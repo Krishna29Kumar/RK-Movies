@@ -62,9 +62,14 @@ export async function POST(request: NextRequest) {
             keyId: process.env.RAZORPAY_KEY_ID,
         });
     } catch (error) {
-        console.error(error);
+        console.error("Payment create-order API Error:", error);
         return NextResponse.json(
-            { error: "Could not start the payment. Please try again." },
+            {
+                error:
+                    error instanceof Error
+                        ? error.message
+                        : "Could not start the payment. Please try again.",
+            },
             { status: 500 }
         );
     }

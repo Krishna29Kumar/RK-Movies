@@ -8,19 +8,13 @@ const LINKS = [
   { href: "/dashboard/work", label: "Work" },
   { href: "/dashboard/book", label: "Book a date" },
   { href: "/dashboard/check-date", label: "Check a date" },
-  { href: "/dashboard/my-bookings", label: "My bookings" },
 ];
 
-export default function DashboardNav({ userName }: { userName: string }) {
+export default function DashboardNav() {
   const pathname = usePathname();
 
   return (
     <aside className="lg:w-56 lg:shrink-0">
-      {userName && (
-        <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
-          Signed in as {userName.split(" ")[0]}
-        </p>
-      )}
       <nav className="flex gap-2 overflow-x-auto border-b border-line pb-3 lg:flex-col lg:gap-1 lg:border-b-0 lg:border-r lg:pb-0 lg:pr-4">
         {LINKS.map((link) => {
           const active = link.exact

@@ -32,45 +32,45 @@ export default function HeroSlider() {
 
     return (
         <div
-            className="relative overflow-hidden rounded-sm border border-line-strong bg-bg-raised"
+            className="relative flex flex-1 flex-col items-center justify-center overflow-hidden px-6 py-12"
             onMouseEnter={() => setPaused(true)}
             onMouseLeave={() => setPaused(false)}
         >
-            <div className="relative flex aspect-[16/9] items-center justify-center overflow-hidden bg-bg-raised-2 sm:aspect-[16/6]">
-                <div
-                    key={slide.slug}
-                    aria-hidden
-                    className="hero-slide absolute inset-0 opacity-70"
-                    style={{ background: slide.gradient }}
-                />
-                <div
-                    aria-hidden
-                    className="absolute inset-0 opacity-40"
-                    style={{
-                        backgroundImage:
-                            "repeating-linear-gradient(115deg, var(--bg-raised-2) 0 2px, transparent 2px 26px)",
-                    }}
-                />
+            {/* Full-bleed ambient gradient for active slide */}
+            <div
+                key={slide.slug}
+                aria-hidden
+                className="hero-slide absolute inset-0 opacity-60"
+                style={{ background: slide.gradient }}
+            />
+            {/* Film diagonal texture */}
+            <div
+                aria-hidden
+                className="absolute inset-0 opacity-25"
+                style={{
+                    backgroundImage:
+                        "repeating-linear-gradient(115deg, var(--bg-raised-2) 0 2px, transparent 2px 26px)",
+                }}
+            />
 
-                <div key={`${slide.slug}-text`} className="hero-slide relative z-10 flex flex-col items-center gap-2 px-6 text-center">
-                    <span className="rounded-sm bg-bg/70 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-orange glow-orange">
-                        Now shooting
-                    </span>
-                    <h2 className="font-display text-3xl tracking-wide text-cream sm:text-5xl">
-                        {slide.label.toUpperCase()}
-                    </h2>
-                    <p className="max-w-md text-sm text-cream/80 sm:text-base">{slide.blurb}</p>
-                </div>
-
-                <span className="absolute left-4 top-4 rounded-sm bg-bg/70 px-2 py-1 font-mono text-[11px] text-cream">
-                    REEL_{String(index + 1).padStart(2, "0")}.MOV
+            {/* Slide content full-screen centered */}
+            <div
+                key={`${slide.slug}-text`}
+                className="hero-slide relative z-10 flex flex-col items-center gap-3 px-4 text-center"
+            >
+                <span className="rounded-sm bg-bg/70 px-3.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-orange glow-orange">
+                    Now shooting
                 </span>
-                <span className="absolute right-4 top-4 rounded-sm bg-bg/70 px-2 py-1 font-mono text-[11px] text-orange glow-orange">
-                    REC
-                </span>
+                <h1 className="font-display text-4xl tracking-wide text-cream sm:text-6xl md:text-7xl lg:text-8xl">
+                    {slide.label.toUpperCase()}
+                </h1>
+                <p className="max-w-xl text-sm text-cream/80 sm:text-base md:text-lg">
+                    {slide.blurb}
+                </p>
             </div>
 
-            <div className="flex items-center justify-center gap-2 border-t border-line bg-bg-raised px-4 py-3">
+            {/* Slide progress indicators */}
+            <div className="relative z-10 mt-8 flex items-center justify-center gap-2">
                 {SLIDES.map((s, i) => (
                     <button
                         key={s.slug}

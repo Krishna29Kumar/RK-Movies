@@ -2,14 +2,14 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { format } from "date-fns";
-import { useSession } from "next-auth/react";
-import type { Session } from "next-auth";
 import BookingCalendar from "@/components/BookingCalendar";
+import ClockTimePicker from "@/components/ClockTimePicker";
 import {
   EVENT_TYPES,
   CAMERA_TYPES,
   SHOOT_TYPES,
   ADVANCE_AMOUNTS,
+  TOTAL_BOOKING_AMOUNT,
 } from "@/lib/booking-constants";
 
 type Status = "idle" | "submitting" | "success" | "error";
@@ -27,6 +27,7 @@ type RazorpayOptions = {
   currency: string;
   name: string;
   description: string;
+  image?: string;
   order_id: string;
   prefill: { name: string; email: string; contact: string };
   theme: { color: string };
@@ -56,32 +57,6 @@ function loadRazorpayScript(): Promise<boolean> {
 }
 
 export default function BookingForm({ initialDate }: { initialDate?: string }) {
-  const { data: session, status: sessionStatus } = useSession();
-
-  if (sessionStatus === "loading") {
-    return (
-      <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted">
-        Loading…
-      </p>
-    );
-  }
-
-  return (
-    <BookingFormInner
-      key={sessionStatus}
-      session={session}
-      initialDate={initialDate}
-    />
-  );
-}
-
-function BookingFormInner({
-  session,
-  initialDate,
-}: {
-  session: Session | null;
-  initialDate?: string;
-}) {
   const [bookedDates, setBookedDates] = useState<Set<string>>(new Set());
   const [loadingAvailability, setLoadingAvailability] = useState(true);
   const [selectedDate, setSelectedDate] = useState<Date | null>(
@@ -92,9 +67,9 @@ function BookingFormInner({
   const [locationStatus, setLocationStatus] = useState<LocationStatus>("idle");
 
   const [form, setForm] = useState(() => ({
-    name: session?.user?.name ?? "",
-    email: session?.user?.email ?? "",
-    phone: (session?.user as (Session["user"] & { mobile?: string }) | undefined)?.mobile ?? "",
+    name: "",
+    email: "",
+    phone: "",
     eventType: EVENT_TYPES[0],
     startTime: "",
     endTime: "",
@@ -236,7 +211,23 @@ function BookingFormInner({
         <h2 className="mt-3 font-display text-2xl tracking-wide text-cream">
           {selectedDate ? format(selectedDate, "d MMMM yyyy") : "Your date"} is on hold
         </h2>
-        <p className="mt-2 text-sm text-muted">
+        <div className="mt-4 inline-flex flex-wrap items-center justify-center gap-6 rounded-sm border border-line bg-bg px-5 py-3 font-mono text-xs">
+          <div>
+            <span className="block text-[10px] uppercase text-muted">Total Payment</span>
+            <span className="font-display text-lg text-cream">₹{TOTAL_BOOKING_AMOUNT.toLocaleString("en-IN")}</span>
+          </div>
+          <div className="h-6 w-px bg-line hidden sm:block" />
+          <div>
+            <span className="block text-[10px] uppercase text-muted">Advance Paid</span>
+            <span className="font-display text-lg text-teal">₹{advanceAmount.toLocaleString("en-IN")}</span>
+          </div>
+          <div className="h-6 w-px bg-line hidden sm:block" />
+          <div>
+            <span className="block text-[10px] uppercase text-muted">Remaining Balance</span>
+            <span className="font-display text-lg text-orange">₹{(TOTAL_BOOKING_AMOUNT - advanceAmount).toLocaleString("en-IN")}</span>
+          </div>
+        </div>
+        <p className="mt-4 text-sm text-muted">
           We&apos;ll confirm by email within 24 hours. A couple of other
           bookings can still be made for the same date.
         </p>
@@ -314,22 +305,22 @@ function BookingFormInner({
         </Field>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Field label="Start time">
-            <input
-              required
-              type="time"
+          <Field label="Start time" as="div">
+            <ClockTimePicker
+              label="Start time"
               value={form.startTime}
-              onChange={(e) => setForm({ ...form, startTime: e.target.value })}
-              className="input"
+              onChange={(val) => setForm((prev) => ({ ...prev, startTime: val }))}
+              placeholder="Select start time"
+              required
             />
           </Field>
-          <Field label="End time">
-            <input
-              required
-              type="time"
+          <Field label="End time" as="div">
+            <ClockTimePicker
+              label="End time"
               value={form.endTime}
-              onChange={(e) => setForm({ ...form, endTime: e.target.value })}
-              className="input"
+              onChange={(val) => setForm((prev) => ({ ...prev, endTime: val }))}
+              placeholder="Select end time"
+              required
             />
           </Field>
         </div>
@@ -454,15 +445,35 @@ function BookingFormInner({
           />
         </Field>
 
-        <div className="rounded-sm border border-line-strong bg-bg-raised p-4">
-          <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
-            Advance payment required
-          </p>
-          <p className="mt-1 font-display text-2xl tracking-wide text-orange">
-            ₹{advanceAmount.toLocaleString("en-IN")}
-          </p>
-          <p className="mt-1 text-xs text-muted">
-            Paid securely via Razorpay. Confirms your slot request instantly.
+        <div className="rounded-sm border border-line-strong bg-bg-raised p-4 sm:p-5">
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-line pb-3.5">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
+                Total Payment
+              </p>
+              <p className="mt-0.5 font-display text-2xl tracking-wide text-cream sm:text-3xl">
+                ₹{TOTAL_BOOKING_AMOUNT.toLocaleString("en-IN")}
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-orange font-semibold">
+                Advance Payment (Pay Now)
+              </p>
+              <p className="mt-0.5 font-display text-2xl tracking-wide text-orange sm:text-3xl">
+                ₹{advanceAmount.toLocaleString("en-IN")}
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-3 flex items-center justify-between text-xs font-mono">
+            <span className="text-muted">Balance remaining (on event day):</span>
+            <span className="text-cream font-medium">
+              ₹{(TOTAL_BOOKING_AMOUNT - advanceAmount).toLocaleString("en-IN")}
+            </span>
+          </div>
+
+          <p className="mt-2 text-xs text-muted">
+            Pay advance securely via Razorpay to instantly lock and hold your date. The remaining balance is payable on shoot day.
           </p>
         </div>
 
@@ -479,20 +490,29 @@ function BookingFormInner({
         >
           {status === "submitting"
             ? "Processing…"
-            : `Pay ₹${advanceAmount.toLocaleString("en-IN")} & request this date`}
+            : `Pay Advance ₹${advanceAmount.toLocaleString("en-IN")} & request this date`}
         </button>
       </form>
     </div>
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({
+  label,
+  children,
+  as = "label",
+}: {
+  label: string;
+  children: React.ReactNode;
+  as?: "label" | "div";
+}) {
+  const Tag = as;
   return (
-    <label className="block">
+    <Tag className="block">
       <span className="mb-1.5 block font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
         {label}
       </span>
       {children}
-    </label>
+    </Tag>
   );
 }

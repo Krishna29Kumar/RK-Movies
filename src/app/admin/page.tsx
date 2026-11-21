@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { startOfMonth, format } from "date-fns";
 import type { AdminBooking } from "@/lib/admin-types";
 import StatsCards from "@/components/admin/StatsCards";
 import BookingsTable from "@/components/admin/BookingsTable";
+import AdminBookingsCalendar from "@/components/admin/AdminBookingsCalendar";
 import RefundsPanel from "@/components/admin/RefundsPanel";
 
 type Tab = "overview" | "bookings" | "refunds";
@@ -15,6 +17,7 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [tab, setTab] = useState<Tab>("overview");
+  const [activeMonth, setActiveMonth] = useState<Date>(() => startOfMonth(new Date()));
 
   useEffect(() => {
     async function loadBookings() {
@@ -48,23 +51,25 @@ export default function AdminPage() {
   async function updateBooking(
     id: string,
     updates: { status?: AdminBooking["status"]; refundStatus?: AdminBooking["refundStatus"] }
-  ) {
-    const res = await fetch(`/api/bookings/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updates),
-    });
-    if (res.ok) {
+  ): Promise<{ success: boolean; error?: string; booking?: AdminBooking }> {
+    try {
+      const res = await fetch(`/api/bookings/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updates),
+      });
       const data = await res.json();
-      setBookings((prev) =>
-        prev.map((b) => (b._id === id ? { ...b, ...data.booking } : b))
-      );
+      if (res.ok) {
+        setBookings((prev) =>
+          prev.map((b) => (b._id === id ? { ...b, ...data.booking } : b))
+        );
+        return { success: true, booking: data.booking };
+      } else {
+        return { success: false, error: data.error || "Could not update booking." };
+      }
+    } catch {
+      return { success: false, error: "Network error. Please try again." };
     }
-  }
-
-  async function handleSignOut() {
-    await fetch("/api/admin/logout", { method: "POST" });
-    router.push("/admin/login");
   }
 
   if (loading) {
@@ -93,21 +98,33 @@ export default function AdminPage() {
     { id: "refunds", label: "Refunds & Cancellations", badge: refundRequestCount || undefined },
   ];
 
+  const now = new Date();
+  const isCurrentMonth =
+    activeMonth.getFullYear() === now.getFullYear() &&
+    activeMonth.getMonth() === now.getMonth();
+
   return (
     <div className="mx-auto max-w-6xl px-6 py-14">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <h1 className="font-display text-3xl tracking-wide text-cream">
           ADMIN PORTAL
         </h1>
-        <div className="flex items-center gap-4">
-          <span className="font-mono text-xs text-muted">{bookings.length} bookings total</span>
-          <button
-            onClick={handleSignOut}
-            className="rounded-sm border border-line px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.1em] text-muted hover:text-cream"
-          >
-            Sign out
-          </button>
-        </div>
+
+        {!isCurrentMonth && (
+          <div className="flex items-center gap-2 rounded-sm border border-orange/40 bg-orange/10 px-2.5 py-1 font-mono text-[11px] text-orange">
+            <span>
+              Month: <strong>{format(activeMonth, "MMMM yyyy").toUpperCase()}</strong>
+            </span>
+            <button
+              type="button"
+              onClick={() => setActiveMonth(startOfMonth(new Date()))}
+              className="underline hover:text-cream ml-1"
+              title="Return to current month"
+            >
+              Reset to Current
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Tab bar */}
@@ -136,7 +153,11 @@ export default function AdminPage() {
       <div className="mt-6">
         {tab === "overview" && (
           <div className="space-y-8">
-            <StatsCards bookings={bookings} />
+            <StatsCards
+              bookings={bookings}
+              activeMonth={activeMonth}
+              onMonthChange={setActiveMonth}
+            />
             <div>
               <h2 className="font-display text-lg tracking-wide text-cream">
                 Needs your attention
@@ -157,11 +178,21 @@ export default function AdminPage() {
         )}
 
         {tab === "bookings" && (
-          <BookingsTable bookings={bookings} onUpdate={updateBooking} />
+          <AdminBookingsCalendar
+            bookings={bookings}
+            onUpdate={updateBooking}
+            activeMonth={activeMonth}
+            onMonthChange={setActiveMonth}
+          />
         )}
 
         {tab === "refunds" && (
-          <RefundsPanel bookings={bookings} onUpdate={updateBooking} />
+          <RefundsPanel
+            bookings={bookings}
+            onUpdate={updateBooking}
+            activeMonth={activeMonth}
+            onMonthChange={setActiveMonth}
+          />
         )}
       </div>
     </div>

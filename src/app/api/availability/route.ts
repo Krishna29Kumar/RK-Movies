@@ -26,9 +26,12 @@ export async function GET() {
 
     return NextResponse.json({ bookedDates });
   } catch (error) {
-    console.error(error);
+    console.error("Availability API Error:", error);
     return NextResponse.json(
-      { error: "Could not load availability." },
+      {
+        error:
+          error instanceof Error ? error.message : "Could not load availability.",
+      },
       { status: 500 }
     );
   }

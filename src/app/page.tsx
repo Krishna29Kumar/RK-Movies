@@ -3,7 +3,6 @@ import HeroSlider from "@/components/HeroSlider";
 import CategoryExplorer from "@/components/CategoryExplorer";
 import SectionLabel from "@/components/SectionLabel";
 import HighlightsMarquee from "@/components/HighlightsMarquee";
-import StatsStrip from "@/components/StatsStrip";
 import Testimonials from "@/components/Testimonials";
 
 const PROCESS = [
@@ -16,8 +15,8 @@ const PROCESS = [
 export default function Home() {
   return (
     <div>
-      {/* HERO — auto-sliding across every kind of shoot, with ambient glow */}
-      <section className="relative overflow-hidden">
+      {/* FIRST FOLD: Full-page Hero + running ticker pinned at the bottom */}
+      <div className="relative flex min-h-[calc(100dvh-65px)] flex-col justify-between overflow-hidden">
         <div
           aria-hidden
           className="ambient-orb -top-24 -left-24 h-72 w-72 bg-orange"
@@ -28,37 +27,18 @@ export default function Home() {
         />
         <div
           aria-hidden
-          className="ambient-orb bottom-0 left-1/4 h-56 w-[420px] bg-teal"
+          className="ambient-orb bottom-12 left-1/4 h-56 w-[420px] bg-teal"
         />
 
-        <div className="relative mx-auto max-w-6xl px-6 pt-14 sm:pt-20">
-          <div className="flex flex-wrap items-end justify-between gap-4 pb-6">
-            <div>
-              <p className="font-mono text-xs uppercase tracking-[0.14em] text-orange">
-                Now booking 2026 &mdash; 2027 dates
-              </p>
-              <h1 className="mt-3 font-display text-5xl leading-[0.95] tracking-wide text-cream sm:text-7xl">
-                EVERY EVENT
-                <br />
-                HAS A CUT.
-              </h1>
-            </div>
-            <p className="max-w-xs text-sm text-muted">
-              Wedding films, corporate recaps, campus events, and religious
-              ceremonies &mdash; shot and edited by one studio, one point of
-              contact.
-            </p>
-          </div>
+        {/* Full-bleed Hero Slider */}
+        <HeroSlider />
 
-          <HeroSlider />
-        </div>
-      </section>
-
-      {/* HIGHLIGHTS TICKER — full-bleed scrolling strip */}
-      <HighlightsMarquee />
+        {/* HIGHLIGHTS TICKER — full-bleed scrolling strip at the bottom of the screen */}
+        <HighlightsMarquee />
+      </div>
 
       {/* EXPERIENCE HEADLINE */}
-      <section className="mx-auto max-w-6xl px-6 pt-20 text-center">
+      <section className="mx-auto max-w-6xl px-6 pt-24 text-center">
         <p className="font-mono text-xs uppercase tracking-[0.14em] text-orange">
           The craft
         </p>
@@ -73,11 +53,6 @@ export default function Home() {
         <CategoryExplorer />
       </section>
 
-      {/* STATS STRIP */}
-      <section className="mx-auto max-w-6xl px-6 pt-20">
-        <StatsStrip />
-      </section>
-
       {/* TESTIMONIALS */}
       <section className="mx-auto max-w-6xl px-6 pt-20">
         <Testimonials />
@@ -85,7 +60,7 @@ export default function Home() {
 
       {/* PROCESS */}
       <section className="mx-auto max-w-6xl px-6 pt-20">
-        <SectionLabel>How booking works</SectionLabel>
+        <SectionLabel>That&apos;s how we capture your life&apos;s precious moments</SectionLabel>
         <ol className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {PROCESS.map((step, i) => (
             <li key={step.title} className="border-l border-line pl-4">
@@ -109,15 +84,14 @@ export default function Home() {
               CHECK IF YOUR DATE IS OPEN
             </h2>
             <p className="mt-2 text-sm text-muted">
-              Create a free account for live calendar access &mdash; no
-              back-and-forth emails.
+              Live calendar access &mdash; check availability and book your date directly.
             </p>
           </div>
           <Link
-            href="/signup"
+            href="/dashboard/check-date"
             className="rounded-sm bg-orange px-6 py-3 font-mono text-xs uppercase tracking-[0.14em] text-bg transition-opacity hover:opacity-90"
           >
-            Create free account
+            Check open dates
           </Link>
         </div>
       </section>

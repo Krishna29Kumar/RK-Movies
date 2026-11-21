@@ -2,14 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
 import { CATEGORIES, PORTFOLIO_ITEMS, CategorySlug } from "@/lib/portfolio-data";
 import PortfolioCard from "@/components/PortfolioCard";
 import SectionLabel from "@/components/SectionLabel";
 
 export default function CategoryExplorer() {
-    const { status } = useSession();
-    const isSignedIn = status === "authenticated";
     const [active, setActive] = useState<CategorySlug | null>(null);
 
     const activeCategory = CATEGORIES.find((cat) => cat.slug === active);
@@ -51,53 +48,28 @@ export default function CategoryExplorer() {
                             <PortfolioCard key={item.id} item={item} />
                         ))}
 
-                        {isSignedIn ? (
-                            <Link
-                                href="/dashboard/work"
-                                className="group relative flex aspect-video items-center justify-center overflow-hidden rounded-sm border border-line bg-bg-raised-2 transition-colors hover:border-orange"
-                            >
-                                <div
-                                    aria-hidden
-                                    className="absolute inset-0 opacity-50 blur-sm transition-transform duration-500 group-hover:scale-105"
-                                    style={{
-                                        backgroundImage:
-                                            "repeating-linear-gradient(115deg, var(--bg-raised-2) 0 2px, transparent 2px 26px)",
-                                    }}
-                                />
-                                <div className="absolute inset-0 bg-bg/60" />
-                                <div className="relative flex flex-col items-center gap-1 px-4 text-center">
-                                    <p className="font-display text-sm tracking-wide text-cream sm:text-base">
-                                        VIEW FULL PORTFOLIO
-                                    </p>
-                                    <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-orange">
-                                        See more &amp; book a date &rarr;
-                                    </p>
-                                </div>
-                            </Link>
-                        ) : (
-                            <Link
-                                href="/signup"
-                                className="group relative flex aspect-video items-center justify-center overflow-hidden rounded-sm border border-line bg-bg-raised-2 transition-colors hover:border-orange"
-                            >
-                                <div
-                                    aria-hidden
-                                    className="absolute inset-0 opacity-50 blur-sm transition-transform duration-500 group-hover:scale-105"
-                                    style={{
-                                        backgroundImage:
-                                            "repeating-linear-gradient(115deg, var(--bg-raised-2) 0 2px, transparent 2px 26px)",
-                                    }}
-                                />
-                                <div className="absolute inset-0 bg-bg/60" />
-                                <div className="relative flex flex-col items-center gap-1 px-4 text-center">
-                                    <p className="font-display text-sm tracking-wide text-cream sm:text-base">
-                                        SEE MORE
-                                    </p>
-                                    <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-orange">
-                                        Sign up to view &amp; book &rarr;
-                                    </p>
-                                </div>
-                            </Link>
-                        )}
+                        <Link
+                            href="/dashboard/work"
+                            className="group relative flex aspect-video items-center justify-center overflow-hidden rounded-sm border border-line bg-bg-raised-2 transition-colors hover:border-orange"
+                        >
+                            <div
+                                aria-hidden
+                                className="absolute inset-0 opacity-50 blur-sm transition-transform duration-500 group-hover:scale-105"
+                                style={{
+                                    backgroundImage:
+                                        "repeating-linear-gradient(115deg, var(--bg-raised-2) 0 2px, transparent 2px 26px)",
+                                }}
+                            />
+                            <div className="absolute inset-0 bg-bg/60" />
+                            <div className="relative flex flex-col items-center gap-1 px-4 text-center">
+                                <p className="font-display text-sm tracking-wide text-cream sm:text-base">
+                                    VIEW FULL PORTFOLIO
+                                </p>
+                                <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-orange">
+                                    See more &amp; book a date &rarr;
+                                </p>
+                            </div>
+                        </Link>
                     </div>
                 </div>
             )}

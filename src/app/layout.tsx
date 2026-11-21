@@ -3,6 +3,7 @@ import "./globals.css";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import AuthProvider from "@/components/AuthProvider";
+import ViewfinderCursor from "@/components/ViewfinderCursor";
 
 export const metadata: Metadata = {
   title: "RK-Movies — Wedding, Event & Campus Videography",
@@ -18,6 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className="h-full" data-scroll-behavior="smooth">
       <body className="flex min-h-full flex-col bg-bg text-cream antialiased">
+        <ViewfinderCursor />
         <div className="grain" />
         <AuthProvider>
           <Nav />

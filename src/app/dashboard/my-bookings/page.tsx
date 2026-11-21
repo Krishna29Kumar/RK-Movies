@@ -184,6 +184,9 @@ function BookingCard({
                     </p>
                 </div>
                 <div className="text-right">
+                    <p className="font-mono text-[11px] text-muted">
+                        Total: ₹5,000
+                    </p>
                     <p className="font-mono text-xs text-cream">
                         Advance: ₹{booking.advanceAmount}
                     </p>
